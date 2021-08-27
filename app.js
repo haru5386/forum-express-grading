@@ -14,6 +14,7 @@ const port = 3000
 app.engine('hbs', exphbs({ defaultLayout: 'main', extname: '.hbs' }))
 app.set('view engine', 'hbs')
 
+app.use('/upload', express.static(__dirname + '/upload'))
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(session({
   secret: 'secret',
