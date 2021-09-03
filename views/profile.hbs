@@ -1,0 +1,13 @@
+<div class="card d-flex flex-row col-sm-10">
+  <div style="width: 20vw; height:20vw"><img class="card-img-top p-4"
+      style="width:100%;height:100%;max-width:300px;max-height:300px; border-radius:200px" src="{{user.image}}"
+      alt="Card image cap"></div>
+  <div class="card-body">
+    <h5 class="card-title">{{user.name}}</h5>
+    <p class="card-text">{{user.email}}
+    </p>
+    {{#ifCond nowUser.id user.id}}
+    <a href="/users/{{user.id}}/edit" class="btn btn-primary">edit</a>
+    {{/ifCond}}
+  </div>
+</div>

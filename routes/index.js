@@ -21,6 +21,15 @@ module.exports = (app, passport) => {
     }
     res.redirect('/signin')
   }
+
+  const authenticatedUser = (req, res, next) => {
+    if (helpers.ensureAuthenticated(req)) {
+      if (helpers.getUser(req).id === req.params.id) { return next() }
+      return res.redirect('back')
+    }
+    res.redirect('/signin')
+  }
+
   app.get('/', authenticated, (req, res) => { res.redirect('/restaurants') })
   app.get('/restaurants', authenticated, restController.getRestaurants)
 
@@ -43,6 +52,11 @@ module.exports = (app, passport) => {
   app.get('/admin/categories/:id', authenticatedAdmin, categoryController.getCategories)
   app.put('/admin/categories/:id', authenticatedAdmin, categoryController.putCategory)
   app.delete('/admin/categories/:id', authenticatedAdmin, categoryController.deleteCategory)
+
+  app.get('/users/:id', authenticated, userController.getUser)
+  app.get('/users/:id/edit', authenticatedUser, userController.editUser)
+  app.put('/users/:id', authenticatedUser, upload.single('image'), userController.putUser)
+
 
   app.get('/signup', userController.signUpPage)
   app.post('/signup', userController.signUp)
