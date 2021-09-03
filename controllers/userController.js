@@ -5,6 +5,8 @@ const fs = require('fs')
 const imgur = require('imgur-node-api')
 const IMGUR_CLIENT_ID = '65c1a1c6b9b617c'
 const helpers = require('../_helpers');
+const Comment = db.Comment
+const Restaurant = db.Restaurant
 
 const userController = {
   signUpPage: (req, res) => {
@@ -50,7 +52,30 @@ const userController = {
 
   getUser: (req, res) => {
     User.findByPk(req.params.id)
-      .then(user => res.render('profile', { nowUser: req.user, user: user.toJSON() }))
+      .then(user => {
+        if (!user) {
+          res.redirect('/')
+        }
+      }).catch(err => { console.log(err) })
+
+    return Promise.all([User.findByPk(req.params.id), Comment.findAndCountAll({
+      raw: true,
+      nest: true,
+      where: { UserId: req.params.id },
+      include: Restaurant
+    })])
+      .then(value => {
+        const [user, comment] = value
+        const count = comment.count
+        const commentData = comment.rows.map(comment => ({
+          ...comment,
+          restaurantId: comment.Restaurant.id,
+          restaurantImage: comment.Restaurant.image
+        }))
+        console.log(commentData)
+        res.render('profile', { nowUser: req.user, user: user.toJSON(), count: count, comment: commentData })
+      })
+      .catch(err => { console.log(err) })
   },
   editUser: (req, res) => {
     if (helpers.getUser(req).id !== Number(req.params.id)) {

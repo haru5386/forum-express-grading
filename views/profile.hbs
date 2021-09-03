@@ -4,10 +4,25 @@
       alt="Card image cap"></div>
   <div class="card-body">
     <h5 class="card-title">{{user.name}}</h5>
+    <p>{{count}}已評論餐廳</p>
     <p class="card-text">{{user.email}}
     </p>
     {{#ifCond nowUser.id user.id}}
     <a href="/users/{{user.id}}/edit" class="btn btn-primary">edit</a>
     {{/ifCond}}
+  </div>
+</div>
+
+<div class="card">
+  <h5 class="card-header">{{count}}已評論餐廳</h5>
+  <div class="card-body d-flex flex-wrap">
+    {{#each comment}}
+    <a href="/restaurants/{{this.restaurantId}}">
+      <div class="m-1" style="width: 100px;height:100px"><img src="{{this.restaurantImage}}" alt=""
+          style="max-height:100%;max-width:100%;display:block;width:auto;height:auto;">
+      </div>
+    </a>
+
+    {{/each}}
   </div>
 </div>
