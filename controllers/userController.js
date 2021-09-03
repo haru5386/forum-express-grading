@@ -4,6 +4,7 @@ const User = db.User
 const fs = require('fs')
 const imgur = require('imgur-node-api')
 const IMGUR_CLIENT_ID = '65c1a1c6b9b617c'
+const helpers = require('../_helpers');
 
 const userController = {
   signUpPage: (req, res) => {
@@ -52,10 +53,18 @@ const userController = {
       .then(user => res.render('profile', { nowUser: req.user, user: user.toJSON() }))
   },
   editUser: (req, res) => {
-    User.findByPk(req.params.id)
-      .then(user => res.render('editprofile', { user: user.toJSON() }))
+    if (helpers.getUser(req).id !== Number(req.params.id)) {
+      return res.redirect(`/users/${req.params.id}`)
+    } else {
+      User.findByPk(req.params.id)
+        .then(user => res.render('editprofile', { user: user.toJSON() }))
+    }
+
   },
   putUser: (req, res) => {
+    if (helpers.getUser(req).id !== Number(req.params.id)) {
+      return res.redirect(`/users/${req.params.id}`)
+    }
     if (!req.body.name) {
       req.flash('error_messages', "name didn't exist")
       return res.redirect('back')
