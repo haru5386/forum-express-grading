@@ -1,6 +1,7 @@
 const restController = require('../controllers/restController.js')
 const adminController = require('../controllers/adminrestaurants')
 const userController = require('../controllers/userController')
+const commentController = require('../controllers/commentController')
 const categoryController = require('../controllers/categoryController')
 const multer = require('multer')
 const upload = multer({ dest: 'temp/' })
@@ -23,10 +24,13 @@ module.exports = (app, passport) => {
   app.get('/', authenticated, (req, res) => { res.redirect('/restaurants') })
   app.get('/restaurants', authenticated, restController.getRestaurants)
 
+  app.post('/comments', authenticated, commentController.postComment)
+  app.delete('/comments/:id', authenticatedAdmin, commentController.deleteComment)
+
   app.get('/admin', authenticatedAdmin, (req, res) => { res.redirect('/admin/restaurants') })
   app.get('/admin/restaurants', authenticatedAdmin, adminController.getRestaurants)
   app.get('/admin/restaurants/create', authenticatedAdmin, adminController.createRestaurant)
-  app.post('/admin/restaurants', authenticatedAdmin, upload.single('image'),adminController.postRestaurant)
+  app.post('/admin/restaurants', authenticatedAdmin, upload.single('image'), adminController.postRestaurant)
   app.get('/admin/restaurants/:id', authenticatedAdmin, adminController.getRestaurant)
   app.get('/admin/restaurants/:id/edit', authenticatedAdmin, adminController.editRestaurant)
   app.put('/admin/restaurants/:id/', authenticatedAdmin, upload.single('image'), adminController.putRestaurant)
@@ -35,7 +39,7 @@ module.exports = (app, passport) => {
   app.put('/admin/users/:id/toggleAdmin', authenticatedAdmin, adminController.toggleAdmin)
 
   app.get('/admin/categories', authenticatedAdmin, categoryController.getCategories)
-  app.post('/admin/categories', authenticatedAdmin,categoryController.postCategory)
+  app.post('/admin/categories', authenticatedAdmin, categoryController.postCategory)
   app.get('/admin/categories/:id', authenticatedAdmin, categoryController.getCategories)
   app.put('/admin/categories/:id', authenticatedAdmin, categoryController.putCategory)
   app.delete('/admin/categories/:id', authenticatedAdmin, categoryController.deleteCategory)
