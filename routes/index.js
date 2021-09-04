@@ -24,6 +24,8 @@ module.exports = (app, passport) => {
 
   app.get('/', authenticated, (req, res) => { res.redirect('/restaurants') })
   app.get('/restaurants', authenticated, restController.getRestaurants)
+  app.get('/restaurants/feeds', authenticated, restController.getFeeds)
+  app.get('/restaurants/:id', authenticated, restController.getRestaurant)
 
   app.post('/comments', authenticated, commentController.postComment)
   app.delete('/comments/:id', authenticatedAdmin, commentController.deleteComment)
@@ -56,5 +58,5 @@ module.exports = (app, passport) => {
   app.get('/signin', userController.signInPage)
   app.post('/signin', passport.authenticate('local', { failureRedirect: '/signin', failureFlash: true }), userController.signIn)
   app.get('/logout', userController.logout)
-  app.get('/restaurants/:id', authenticated, restController.getRestaurant)
+  
 }
