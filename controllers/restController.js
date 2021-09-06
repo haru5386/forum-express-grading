@@ -6,7 +6,7 @@ const User = db.User
 const pageLimit = 10
 
 const restController = {
-  getRestaurants: (req, res) => {
+  getRestaurants: (req, res, next) => {
     let offset = 0
     const whereQuery = {}
     let categoryId = ''
@@ -45,11 +45,11 @@ const restController = {
               prev: prev,
               next: next
             })
-          })
+          }).catch(err => next(err))
 
-      })
+      }).catch(err => next(err))
   },
-  getRestaurant: (req, res) => {
+  getRestaurant: (req, res, next) => {
     Restaurant.findByPk(req.params.id, {
       include: [
         Category,
@@ -63,9 +63,9 @@ const restController = {
         const isLiked = restaurant.LikedUsers.map(d => d.id).includes(req.user.id)
         restaurant.increment('viewCounts', { by: 1 })
         return res.render('restaurant', { restaurant: restaurant.toJSON(), isFavorited: isFavorited, isLiked: isLiked })
-      })
+      }).catch(err => next(err))
   },
-  getFeeds: (req, res) => {
+  getFeeds: (req, res, next) => {
     return Promise.all([
       Restaurant.findAll({
         limit: 10,
@@ -86,9 +86,9 @@ const restController = {
         restaurants: restaurants,
         comments: comments
       })
-    })
+    }).catch(err => next(err))
   },
-  getDashboard: (req, res) => {
+  getDashboard: (req, res, next) => {
 
     return Promise.all([
       Restaurant.findByPk(req.params.id, {
@@ -99,7 +99,7 @@ const restController = {
       })])
       .then(([restaurant, count]) => {
         res.render('dashboard', { count: count, restaurant: restaurant.toJSON() })
-      })
+      }).catch(err => next(err))
   },
   getTopRestaurants: (req, res, next) => {
     Restaurant.findAll({

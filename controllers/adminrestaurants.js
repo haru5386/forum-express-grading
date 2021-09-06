@@ -8,7 +8,7 @@ const Category = db.Category
 const IMGUR_CLIENT_ID = '65c1a1c6b9b617c'
 
 const adminController = {
-  getRestaurants: (req, res) => {
+  getRestaurants: (req, res, next) => {
     return Restaurant.findAll({
       raw: true,
       nest: true,
@@ -16,15 +16,15 @@ const adminController = {
     })
       .then(restaurants => {
         return res.render('admin/restaurants', { restaurants: restaurants })
-      })
+      }).catch(err => next(err))
   },
-  createRestaurant: (req, res) => {
+  createRestaurant: (req, res, next) => {
     Category.findAll({ raw: true, nest: true })
       .then(categories => {
         return res.render('admin/create', { categories: categories })
-      })
+      }).catch(err => next(err))
   },
-  postRestaurant: (req, res) => {
+  postRestaurant: (req, res, next) => {
     if (!req.body.name) {
       req.flash('error_messages', "name didn't exist")
       return res.redirect('back')
@@ -45,8 +45,8 @@ const adminController = {
           .then(restaurant => {
             req.flash('success_messages', 'restaurant was successfully created')
             res.redirect('/admin/restaurants')
-          })
-      })
+          }).catch(err => next(err))
+      }).catch(err => next(err))
     } else {
       return Restaurant.create({
         name: req.body.name,
@@ -59,16 +59,16 @@ const adminController = {
       }).then((restaurant) => {
         req.flash('success_messages', 'restaurant was successfully created')
         return res.redirect('/admin/restaurants')
-      })
+      }).catch(err => next(err))
     }
   },
-  getRestaurant: (req, res) => {
+  getRestaurant: (req, res, next) => {
     return Restaurant.findByPk(req.params.id, { include: [Category] })
       .then(restaurant => {
         return res.render('admin/restaurant', { restaurant: restaurant.toJSON() })
-      })
+      }).catch(err => next(err))
   },
-  editRestaurant: (req, res) => {
+  editRestaurant: (req, res, next) => {
     Category.findAll({
       raw: true,
       nest: true
@@ -79,9 +79,9 @@ const adminController = {
           restaurant: restaurant.toJSON()
         })
       })
-    })
+    }).catch(err => next(err))
   },
-  putRestaurant: (req, res) => {
+  putRestaurant: (req, res, next) => {
     if (!req.body.name) {
       req.flash('error_messages', "name didn't exist")
       return res.redirect('back')
@@ -105,8 +105,8 @@ const adminController = {
               req.flash('success_messages', 'restaurant was successfully to update')
               res.redirect('/admin/restaurants')
             })
-          })
-      })
+          }).catch(err => next(err))
+      }).catch(err => next(err))
     } else {
       return Restaurant.findByPk(req.params.id)
         .then((restaurant) => {
@@ -121,11 +121,11 @@ const adminController = {
           }).then((restaurant) => {
             req.flash('success_messages', 'restaurant was successfully to update')
             res.redirect('/admin/restaurants')
-          })
-        })
+          }).catch(err => next(err))
+        }).catch(err => next(err))
     }
   },
-  deleteRestaurant: (req, res) => {
+  deleteRestaurant: (req, res, next) => {
     return Restaurant.findByPk(req.params.id)
       .then((restaurant) => {
         restaurant.destroy()
@@ -134,12 +134,12 @@ const adminController = {
           })
       })
   },
-  getUsers: (req, res) => {
+  getUsers: (req, res, next) => {
     return User.findAll({ raw: true })
       .then(users => { return res.render('admin/users', { users: users }) })
-      .catch(err => console.log(err))
+      .catch(err => next(err))
   },
-  toggleAdmin: (req, res) => {
+  toggleAdmin: (req, res, next) => {
     return User.findByPk(req.params.id)
       .then((user) => {
         if (user.email === 'root@example.com') {
@@ -156,7 +156,7 @@ const adminController = {
           })
       })
 
-      .catch(err => console.log(err))
+      .catch(err => next(err))
   }
 }
 

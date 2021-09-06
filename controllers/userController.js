@@ -12,10 +12,10 @@ const Like = db.Like
 const Followship = db.Followship
 
 const userController = {
-  signUpPage: (req, res) => {
+  signUpPage: (req, res,next) => {
     return res.render('signup')
   },
-  signUp: (req, res) => {
+  signUp: (req, res,next) => {
     if (req.body.password !== req.body.passwordCheck) {
       req.flash('error_messages', '兩次密碼輸入不同！')
       return res.redirect('/signup')
@@ -35,31 +35,31 @@ const userController = {
               return res.redirect('/signin')
             })
           }
-        })
+        }).catch(err => next(err))
     }
   },
-  signInPage: (req, res) => {
+  signInPage: (req, res,next) => {
     return res.render('signin')
   },
 
-  signIn: (req, res) => {
+  signIn: (req, res,next) => {
     req.flash('success_messages', '成功登入！')
     res.redirect('/restaurants')
   },
 
-  logout: (req, res) => {
+  logout: (req, res,next) => {
     req.flash('success_messages', '登出成功！')
     req.logout()
     res.redirect('/signin')
   },
 
-  getUser: (req, res) => {
+  getUser: (req, res,next) => {
     User.findByPk(req.params.id)
       .then(user => {
         if (!user) {
           res.redirect('/')
         }
-      }).catch(err => { console.log(err) })
+      }).catch(err => next(err))
 
     return Promise.all([User.findByPk(req.params.id), Comment.findAndCountAll({
       raw: true,
@@ -80,18 +80,19 @@ const userController = {
         }))
         res.render('profile', { nowUser: req.user, user: user.toJSON(), resCount:resCount,count: count, comment: commentData })
       })
-      .catch(err => { console.log(err) })
+      .catch(err => next(err))
   },
-  editUser: (req, res) => {
+  editUser: (req, res,next) => {
     if (helpers.getUser(req).id !== Number(req.params.id)) {
       return res.redirect(`/users/${req.params.id}`)
     } else {
       User.findByPk(req.params.id)
         .then(user => res.render('editprofile', { user: user.toJSON() }))
+        .catch(err => next(err))
     }
 
   },
-  putUser: (req, res) => {
+  putUser: (req, res,next) => {
     if (helpers.getUser(req).id !== Number(req.params.id)) {
       return res.redirect(`/users/${req.params.id}`)
     }
@@ -111,7 +112,7 @@ const userController = {
             }).then((user) => {
               req.flash('success_messages', 'user was successfully to update')
               res.redirect(`/users/${user.id}`)
-            })
+            }).catch(err => next(err))
           })
       })
     } else {
@@ -123,20 +124,20 @@ const userController = {
           }).then((user) => {
             req.flash('success_messages', 'user was successfully to update')
             res.redirect(`/users/${user.id}`)
-          })
+          }).catch(err => next(err))
         })
     }
   },
-  addFavorite: (req, res) => {
+  addFavorite: (req, res,next) => {
     return Favorite.create({
       UserId: req.user.id,
       RestaurantId: req.params.restaurantId
     })
       .then((restaurant) => {
         return res.redirect('back')
-      })
+      }).catch(err => next(err))
   },
-  removeFavorite: (req, res) => {
+  removeFavorite: (req, res,next) => {
     return Favorite.findOne({
       where: {
         UserId: req.user.id,
@@ -151,12 +152,12 @@ const userController = {
           favorite.destroy()
             .then((restaurant) => {
               return res.redirect('back')
-            })
+            }).catch(err => next(err))
         }
 
       })
   },
-  addLike: (req, res) => {
+  addLike: (req, res,next) => {
     return Like.findOrCreate({
       where: {
         UserId: req.user.id,
@@ -164,9 +165,9 @@ const userController = {
       }
     }).then((result) => {
       return res.redirect('back')
-    })
+    }).catch(err => next(err))
   },
-  removeLike: (req, res) => {
+  removeLike: (req, res,next) => {
     return Like.findOne({
       where: {
         UserId: req.user.id,
@@ -180,11 +181,11 @@ const userController = {
           like.destroy()
             .then(restaurant => {
               return res.redirect('back')
-            })
+            }).catch(err => next(err))
         }
-      })
+      }).catch(err => next(err))
   },
-  getTopUser: (req, res) => {
+  getTopUser: (req, res,next) => {
     return User.findAll({
       include: [
         { model: User, as: 'Followers' }
@@ -197,19 +198,19 @@ const userController = {
       }))
       users = users.sort((a, b) => b.FollowerCount - a.FollowerCount)
       return res.render('topUser', { users: users })
-    })
+    }).catch(err => next(err))
   },
-  addFollowing: (req, res) => {
+  addFollowing: (req, res,next) => {
     return Followship.create({
       followerId: req.user.id,
       followingId: req.params.userId
     })
       .then((followship) => {
         return res.redirect('back')
-      })
+      }).catch(err => next(err))
   },
 
-  removeFollowing: (req, res) => {
+  removeFollowing: (req, res,next) => {
     return Followship.findOne({
       where: {
         followerId: req.user.id,
@@ -221,7 +222,7 @@ const userController = {
           .then((followship) => {
             return res.redirect('back')
           })
-      })
+      }).catch(err => next(err))
   }
 }
 
