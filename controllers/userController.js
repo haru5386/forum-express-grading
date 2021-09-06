@@ -70,13 +70,15 @@ const userController = {
       .then(value => {
         const [user, comment] = value
         const count = comment.count
-        const commentData = comment.rows.map(comment => ({
+        const set = new Set()
+        const filterData = comment.rows.filter(item => !set.has(item.Restaurant.id) ? set.add(item.Restaurant.id):false)
+        const resCount = filterData.length
+        const commentData = filterData.map(comment => ({
           ...comment,
           restaurantId: comment.Restaurant.id,
           restaurantImage: comment.Restaurant.image
         }))
-        console.log(commentData)
-        res.render('profile', { nowUser: req.user, user: user.toJSON(), count: count, comment: commentData })
+        res.render('profile', { nowUser: req.user, user: user.toJSON(), resCount:resCount,count: count, comment: commentData })
       })
       .catch(err => { console.log(err) })
   },
