@@ -6,17 +6,13 @@ const imgur = require('imgur-node-api')
 const category = require('../models/category')
 const Category = db.Category
 const IMGUR_CLIENT_ID = '65c1a1c6b9b617c'
+const adminService = require('../services/adminService')
 
 const adminController = {
-  getRestaurants: (req, res, next) => {
-    return Restaurant.findAll({
-      raw: true,
-      nest: true,
-      include: [Category]
-    })
-      .then(restaurants => {
-        return res.render('admin/restaurants', { restaurants: restaurants })
-      }).catch(err => next(err))
+  getRestaurants: (req, res) => {
+    adminService.getRestaurants(req,res,(data)=>{
+      return res.render('admin/restaurants',data)
+    }).catch(err => next(err))
   },
   createRestaurant: (req, res, next) => {
     Category.findAll({ raw: true, nest: true })

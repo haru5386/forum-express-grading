@@ -41,7 +41,7 @@ app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
 })
 
-require('./routes')(app, passport)
+require('./routes')(app)
 
 app.use(function (err, req, res, next) {
   res.locals.message = err.message
