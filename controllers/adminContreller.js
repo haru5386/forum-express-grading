@@ -12,7 +12,7 @@ const adminController = {
   getRestaurants: (req, res) => {
     adminService.getRestaurants(req,res,(data)=>{
       return res.render('admin/restaurants',data)
-    }).catch(err => next(err))
+    })
   },
   createRestaurant: (req, res, next) => {
     Category.findAll({ raw: true, nest: true })
@@ -58,11 +58,10 @@ const adminController = {
       }).catch(err => next(err))
     }
   },
-  getRestaurant: (req, res, next) => {
-    return Restaurant.findByPk(req.params.id, { include: [Category] })
-      .then(restaurant => {
-        return res.render('admin/restaurant', { restaurant: restaurant.toJSON() })
-      }).catch(err => next(err))
+  getRestaurant: (req, res) => {
+    adminService.getRestaurant(req, res, (data) => {
+      return res.render('admin/restaurant', data)
+    })
   },
   editRestaurant: (req, res, next) => {
     Category.findAll({
