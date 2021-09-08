@@ -19,6 +19,7 @@ app.set('view engine', 'hbs')
 
 app.use('/upload', express.static(__dirname + '/upload'))
 app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.json())
 app.use(session({
   secret: 'secret',
   resave: false,
