@@ -18,7 +18,19 @@ const categoryController = {
           callback({ categories: categories })
         }
       }).catch(err => next(err))
-  }
+  },
+  postCategory: (req, res, callback,next) => {
+    if (!req.body.name) {
+      return callback({ status: 'error', message: "name didn't exist" })
+    } else {
+      return Category.create({
+        name: req.body.name
+      })
+        .then((category) => {
+          callback({ status: 'success', message: 'Category was successfully created' })
+        }).catch(err => next(err))
+    }
+  },
 }
 
 module.exports = categoryController
