@@ -31,6 +31,19 @@ const categoryController = {
         }).catch(err => next(err))
     }
   },
+  putCategory: (req, res, callback,next) => {
+    if (!req.body.name) {
+      return callback({ status: 'error', message: "name didn't exist" })
+    } else {
+      return Category.findByPk(req.params.id)
+        .then(category => {
+          category.update({ name: req.body.name })
+            .then((category) => {
+              callback({ status: 'success', message: 'Category was successfully updated' })
+            })
+        }).catch(err => next(err))
+    }
+  },
 }
 
 module.exports = categoryController
