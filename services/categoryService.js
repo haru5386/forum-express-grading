@@ -3,7 +3,7 @@ const Restaurant = db.Restaurant
 const Category = db.Category
 
 const categoryController = {
-  getCategories: (req, res, callback,next) => {
+  getCategories: (req, res, callback, next) => {
     return Category.findAll({
       raw: true,
       nest: true
@@ -19,7 +19,7 @@ const categoryController = {
         }
       }).catch(err => next(err))
   },
-  postCategory: (req, res, callback,next) => {
+  postCategory: (req, res, callback, next) => {
     if (!req.body.name) {
       return callback({ status: 'error', message: "name didn't exist" })
     } else {
@@ -31,7 +31,7 @@ const categoryController = {
         }).catch(err => next(err))
     }
   },
-  putCategory: (req, res, callback,next) => {
+  putCategory: (req, res, callback, next) => {
     if (!req.body.name) {
       return callback({ status: 'error', message: "name didn't exist" })
     } else {
@@ -44,6 +44,14 @@ const categoryController = {
         }).catch(err => next(err))
     }
   },
+  deleteCategory: (req, res, callback, next) => {
+    return Category.findByPk(req.params.id)
+      .then((category) => {
+        category.destroy()
+          .then(() => { callback({ status: 'success', message: '' }) })
+          .catch(err => next(err))
+      }).catch(err => next(err))
+  }
 }
 
 module.exports = categoryController
